@@ -1,65 +1,151 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
+import Reader from "@/components/reader";
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+  const [text, setText] = useState("");
+  const [wpm, setWpm] = useState(300);
+  const [isReading, setIsReading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const handleStart = () => {
+    if (text.trim()) {
+      setIsReading(true);
+    }
+  };
+
+  const handleExit = () => {
+    setIsReading(false);
+  };
+
+  // Mobile warning screen
+  if (isMobile) {
+    return (
+      <main className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-8">
+        <p
+          className="text-white text-xl text-center mb-12"
+          style={{ fontFamily: "Times New Roman, serif" }}
+        >
+          Please use Desktop for the best experience
+        </p>
+        <Link href="https://arthurlabs.net/">
+          <Image
+            src="/logo.png"
+            alt="Arthur Labs"
+            width={48}
+            height={48}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
+        </Link>
       </main>
-    </div>
+    );
+  }
+
+  if (isReading) {
+    return <Reader text={text} initialWpm={wpm} onExit={handleExit} />;
+  }
+
+  return (
+    <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-8">
+      <div className="w-full max-w-3xl">
+        {/* Title */}
+        <h1
+          className="text-4xl font-bold text-white text-center mb-2"
+          style={{ fontFamily: "Times New Roman, serif" }}
+        >
+          SPEED READER
+        </h1>
+
+        {/* Accent line */}
+        <div className="w-24 h-0.5 bg-[#ff3b3b] mx-auto mb-8" />
+
+        {/* Instructions */}
+        <p
+          className="text-[#4a4a4a] text-center mb-6"
+          style={{ fontFamily: "Times New Roman, serif" }}
+        >
+          Paste your text below
+        </p>
+
+        {/* Text input */}
+        <div className="border border-[#252525] rounded-lg overflow-hidden mb-8">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Paste text here..."
+            className="w-full h-64 bg-[#1a1a1a] text-white p-6 resize-none focus:outline-none placeholder-[#4a4a4a]"
+            style={{ fontFamily: "Times New Roman, serif", fontSize: "16px" }}
+          />
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center justify-center gap-4">
+          {/* WPM input */}
+          <div className="text-center">
+            <label
+              className="block text-[#4a4a4a] text-sm mb-2"
+              style={{ fontFamily: "Times New Roman, serif" }}
+            >
+              WPM
+            </label>
+            <input
+              type="number"
+              value={wpm}
+              onChange={(e) =>
+                setWpm(
+                  Math.max(50, Math.min(1500, parseInt(e.target.value) || 300)),
+                )
+              }
+              className="w-full h-12 bg-[#1a1a1a] text-white text-center text-xl rounded border border-[#252525] focus:outline-none focus:border-[#ff3b3b]"
+              style={{ fontFamily: "Times New Roman, serif" }}
+            />
+          </div>
+
+          {/* Start button */}
+          <button
+            onClick={handleStart}
+            disabled={!text.trim()}
+            className="h-12 mt-6 bg-[#ff3b3b] hover:bg-[#ff6b4a] disabled:bg-[#333] disabled:cursor-not-allowed text-white font-bold text-lg px-10 rounded transition-colors"
+            style={{ fontFamily: "Times New Roman, serif" }}
+          >
+            START READING
+          </button>
+        </div>
+
+        {/* Hint */}
+        <p
+          className="text-[#2a2a2a] text-sm text-center mt-8"
+          style={{ fontFamily: "Times New Roman, serif" }}
+        >
+          TIP: Press SPACE to pause/resume during reading
+        </p>
+
+        {/* Logo */}
+        <div className="flex justify-center mt-12">
+          <Link href="https://arthurlabs.net/">
+            <Image
+              src="/logo.png"
+              alt="Arthur Labs"
+              width={48}
+              height={48}
+              className="opacity-30 hover:opacity-70 transition-opacity"
+            />
+          </Link>
+        </div>
+      </div>
+    </main>
   );
 }
