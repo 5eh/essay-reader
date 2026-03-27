@@ -1,0 +1,20 @@
+# Arthur Labs Study
+
+> Arthur Labs Study (study.arthurlabs.net) is an educational study and learning tool built by Arthur Labs. It provides interactive study resources and learning experiences designed to help users master complex topics through structured content and practice.
+
+## Pages
+
+- [Home](https://study.arthurlabs.net/): Main study tool interface and learning resources
+
+## Features
+
+- Interactive study and learning experiences
+- Structured educational content
+- Practice-based learning methodology
+- Built with modern web technologies (Next.js, React)
+
+## Parent Company
+
+- Arthur Labs Inc., Wyoming S-Corporation
+- Website: https://arthurlabs.net
+- Contact: support@arthurlabs.net
